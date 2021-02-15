@@ -43,8 +43,8 @@ type TimingProviderState = {
   beat: Beat;
   bpm: number;
   playState: PlayState;
+  // TODO: we might not need this in state anymore
   tickRate: number;
-  time: number;
 };
 
 export const initialTimingProviderState: TimingProviderState = {
@@ -52,7 +52,6 @@ export const initialTimingProviderState: TimingProviderState = {
   bpm: DEFAULT_BPM,
   playState: 'stopped',
   tickRate: getTickRate(DEFAULT_BPM),
-  time: 0,
 };
 
 export const timingProviderReducer = (
@@ -72,11 +71,9 @@ export const timingProviderReducer = (
       case TimingProviderActionType.Stop:
         draft.beat = FIRST_BEAT;
         draft.playState = 'stopped';
-        draft.time = 0;
         return;
 
       case TimingProviderActionType.Tick: {
-        // TODO: this needs to warp properly based on BPM
         const newSub = wrap(0, 3, state.beat.sub + 1);
         const newBeat = newSub === 0 ? wrap(0, 3, state.beat.main + 1) : state.beat.main;
 
@@ -84,8 +81,6 @@ export const timingProviderReducer = (
           main: newBeat,
           sub: newSub,
         };
-
-        draft.time = wrap(0, state.tickRate * 16, state.time + state.tickRate);
         return;
       }
 

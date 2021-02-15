@@ -18,6 +18,11 @@ const upBeats: Beat[] = [
   { main: 3, sub: 2 },
 ];
 
+const twoAnd4: Beat[] = [
+  { main: 1, sub: 0 },
+  { main: 3, sub: 0 },
+];
+
 function App() {
   return (
     <div>
@@ -27,12 +32,14 @@ function App() {
       <TimingProvider>
         <Transport />
         <hr />
+
         <SamplePlayer
           filePath="kick01.wav"
           name="Kick (Plays on down beats)"
           triggers={downbeats}
         />
         <SamplePlayer filePath="hat01.wav" name="Hat (Plays on up beats)" triggers={upBeats} />
+        <SamplePlayer filePath="snare01.wav" name="Snare (Plays on 2 & 4)" triggers={twoAnd4} />
       </TimingProvider>
     </div>
   );

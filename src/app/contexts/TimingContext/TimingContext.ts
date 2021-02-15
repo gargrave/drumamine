@@ -1,7 +1,7 @@
 import React from 'react';
 
-import { DEFAULT_BPM } from 'app/constants';
-import { Beat } from '../../types';
+import { DEFAULT_BPM, FIRST_BEAT } from 'app/constants';
+import { Beat } from 'app/types';
 
 const noop = () => void 0;
 
@@ -15,7 +15,7 @@ export type TimingContextType = {
 };
 
 const initialTimingContext: TimingContextType = {
-  beat: { main: 0, sub: 0 },
+  beat: FIRST_BEAT,
   bpm: DEFAULT_BPM,
   isPlaying: false,
   play: noop,
