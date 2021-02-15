@@ -1,6 +1,16 @@
 import produce from 'immer';
 
-export const wrap = (min: number, max: number, val: number): number => {
+import { DEFAULT_BPM, FIRST_BEAT } from 'app/constants';
+import { Beat } from 'app/types';
+
+const SEC_PER_MIN = 60.0;
+const MS_PER_SEC = 1000;
+const ticksPerBeat = 4;
+
+const getTickRate = (bpm: number): number =>
+  Math.floor(MS_PER_SEC / (bpm / SEC_PER_MIN) / ticksPerBeat);
+
+const wrap = (min: number, max: number, val: number): number => {
   if (val < min) return max;
   if (val > max) return min;
   return val;
@@ -15,12 +25,18 @@ type TimingProviderAction = {
 type PlayState = 'playing' | 'stopped';
 
 type TimingProviderState = {
+  beat: Beat;
+  bpm: number;
   playState: PlayState;
+  tickRate: number;
   time: number;
 };
 
 export const initialTimingProviderState: TimingProviderState = {
+  beat: FIRST_BEAT,
+  bpm: DEFAULT_BPM,
   playState: 'stopped',
+  tickRate: getTickRate(DEFAULT_BPM),
   time: 0,
 };
 
@@ -35,13 +51,22 @@ export const timingProviderReducer = (
         return;
 
       case 'stop':
+        draft.beat = FIRST_BEAT;
         draft.playState = 'stopped';
         draft.time = 0;
         return;
 
       case 'tick': {
         // TODO: this needs to warp properly based on BPM
-        draft.time = wrap(0, 2000 - 1, state.time + 125);
+        const newSub = wrap(0, 3, state.beat.sub + 1);
+        const newBeat = newSub === 0 ? wrap(0, 3, state.beat.main + 1) : state.beat.main;
+
+        draft.beat = {
+          main: newBeat,
+          sub: newSub,
+        };
+
+        draft.time = wrap(0, state.tickRate * 16, state.time + state.tickRate);
         return;
       }
 

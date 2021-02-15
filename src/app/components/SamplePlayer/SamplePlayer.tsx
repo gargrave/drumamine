@@ -1,16 +1,28 @@
 import React from 'react';
 
 import { useTimingContext } from 'app/contexts';
+import { Beat } from 'app/types';
 import { getAudioBuffer } from 'app/utils';
+
+const playsOnBeat = (triggers: Beat[]) => (currentBeat: Beat) => {
+  const len = triggers.length;
+  for (let i = 0; i < len; i += 1) {
+    const beat = triggers[i];
+    if (beat.main === currentBeat.main && beat.sub === currentBeat.sub) {
+      return true;
+    }
+  }
+  return false;
+};
 
 type SamplePlayerProps = {
   filePath: string;
   name: string;
-  triggers: number[];
+  triggers: Beat[];
 };
 
 export const SamplePlayer: React.FC<SamplePlayerProps> = ({ filePath, name, triggers }) => {
-  const { isPlaying, time } = useTimingContext();
+  const { beat, isPlaying } = useTimingContext();
 
   const [active, setActive] = React.useState(true);
   const [sample, setSample] = React.useState<AudioBuffer>();
@@ -41,10 +53,10 @@ export const SamplePlayer: React.FC<SamplePlayerProps> = ({ filePath, name, trig
     if (!active) return;
     if (!isPlaying) return;
 
-    if (triggers.includes(time)) {
+    if (playsOnBeat(triggers)(beat)) {
       playSound();
     }
-  }, [active, isPlaying, playSound, time, triggers]);
+  }, [active, beat, isPlaying, playSound, triggers]);
 
   return <div>SamplePlayer: {name}</div>;
 };

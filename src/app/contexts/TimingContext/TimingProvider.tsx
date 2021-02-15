@@ -9,7 +9,7 @@ type TimingProviderProps = {
 
 export const TimingProvider: React.FC<TimingProviderProps> = ({ children }) => {
   const [state, dispatch] = React.useReducer(timingProviderReducer, initialTimingProviderState);
-  const { playState, time } = state;
+  const { beat, bpm, playState, tickRate } = state;
 
   const isPlaying = playState === 'playing';
 
@@ -19,11 +19,11 @@ export const TimingProvider: React.FC<TimingProviderProps> = ({ children }) => {
     if (isPlaying) {
       interval = setInterval(() => {
         dispatch({ type: 'tick' });
-      }, 125);
+      }, tickRate);
     }
 
     return () => void clearInterval(interval);
-  }, [isPlaying]);
+  }, [isPlaying, tickRate]);
 
   const play = React.useCallback(() => {
     dispatch({ type: 'start' });
@@ -35,13 +35,13 @@ export const TimingProvider: React.FC<TimingProviderProps> = ({ children }) => {
 
   const contextValue = React.useMemo(
     () => ({
-      bpm: 120,
+      beat,
+      bpm,
       isPlaying,
       play,
       stop,
-      time,
     }),
-    [isPlaying, play, stop, time],
+    [beat, bpm, isPlaying, play, stop],
   );
 
   return <TimingContext.Provider value={contextValue}>{children}</TimingContext.Provider>;
