@@ -21,6 +21,9 @@ const upBeats: Beat[] = [
 function App() {
   return (
     <div>
+      <h1>Drumamine</h1>
+      <hr />
+
       <TimingProvider>
         <Transport />
         <hr />

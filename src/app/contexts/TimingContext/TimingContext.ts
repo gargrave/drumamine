@@ -10,6 +10,7 @@ export type TimingContextType = {
   bpm: number;
   isPlaying: boolean;
   play: () => void;
+  setBpm: (value: number) => void;
   stop: () => void;
 };
 
@@ -18,6 +19,7 @@ const initialTimingContext: TimingContextType = {
   bpm: DEFAULT_BPM,
   isPlaying: false,
   play: noop,
+  setBpm: noop,
   stop: noop,
 };
 

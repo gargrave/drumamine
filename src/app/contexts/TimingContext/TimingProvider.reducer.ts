@@ -16,11 +16,26 @@ const wrap = (min: number, max: number, val: number): number => {
   return val;
 };
 
-export type TimingProviderActionType = 'start' | 'stop' | 'tick';
+export enum TimingProviderActionType {
+  SetBpm = 'SetBpm',
+  Start = 'Start',
+  Stop = 'Stop',
+  Tick = 'Tick',
+}
 
-type TimingProviderAction = {
-  type: TimingProviderActionType;
-};
+type EmptyActionTypes =
+  | TimingProviderActionType.Start
+  | TimingProviderActionType.Stop
+  | TimingProviderActionType.Tick;
+
+type TimingProviderAction =
+  | {
+      type: TimingProviderActionType.SetBpm;
+      value: number;
+    }
+  | {
+      type: EmptyActionTypes;
+    };
 
 type PlayState = 'playing' | 'stopped';
 
@@ -46,17 +61,21 @@ export const timingProviderReducer = (
 ): TimingProviderState => {
   return produce(state, (draft) => {
     switch (action.type) {
-      case 'start':
+      case TimingProviderActionType.SetBpm:
+        draft.bpm = action.value;
+        return;
+
+      case TimingProviderActionType.Start:
         draft.playState = 'playing';
         return;
 
-      case 'stop':
+      case TimingProviderActionType.Stop:
         draft.beat = FIRST_BEAT;
         draft.playState = 'stopped';
         draft.time = 0;
         return;
 
-      case 'tick': {
+      case TimingProviderActionType.Tick: {
         // TODO: this needs to warp properly based on BPM
         const newSub = wrap(0, 3, state.beat.sub + 1);
         const newBeat = newSub === 0 ? wrap(0, 3, state.beat.main + 1) : state.beat.main;
