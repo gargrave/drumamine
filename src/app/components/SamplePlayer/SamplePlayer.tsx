@@ -10,9 +10,9 @@ type SamplePlayerProps = {
 };
 
 export const SamplePlayer: React.FC<SamplePlayerProps> = ({ filePath, name, triggers }) => {
-  const { time } = useTimingContext();
+  const { isPlaying, time } = useTimingContext();
 
-  const [active, setActive] = React.useState(false);
+  const [active, setActive] = React.useState(true);
   const [sample, setSample] = React.useState<AudioBuffer>();
 
   const playSound = React.useCallback(() => {
@@ -39,10 +39,12 @@ export const SamplePlayer: React.FC<SamplePlayerProps> = ({ filePath, name, trig
   // when "time" changes, see if we need to trigger the sample
   React.useEffect(() => {
     if (!active) return;
+    if (!isPlaying) return;
+
     if (triggers.includes(time)) {
       playSound();
     }
-  }, [active, playSound, time, triggers]);
+  }, [active, isPlaying, playSound, time, triggers]);
 
-  return <div />;
+  return <div>SamplePlayer: {name}</div>;
 };
